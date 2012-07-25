@@ -1,1 +1,166 @@
-This file will be updated at a later date.
+==============================================================================
+1. Introduction
+==============================================================================
+First the development team would like to take the opportunity to thank you for
+your interest in our little python program. We will assume that since you have
+downloaded it and happen to be viewing the read me you have a general idea of
+what the program does. In short this Python program will convert almost any
+video format into almost any other format. We won't go into the exact details
+in this section, but when everything is setup the conversion process will be
+as simple as drag and drop any video(s) you wish to convert onto the program
+and walk away.
+
+==============================================================================
+2. License / Warranty
+==============================================================================
+    KVConvertor - All purpose video converting utility.
+    Copyright (C) 2012  Michael Stover
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  
+**** Finish this section later ****
+
+==============================================================================
+3. Minimum / Recommended Requirements
+==============================================================================
+As far as hardware is concerned we have not tested for minimum requirements at
+this time. Because of this I will provide the basic computer setup that is in
+use for writing/running the program.
+
+System 1 is a Dell Inspiron 1525 Laptop
+    CPU:
+        Intel Core 2 Duo T8100 / 2.1GHz, L2 Cache - 2MB (Dual-Core)
+    Memory:
+        4GB (plus 4GB swap partition)
+    HDD:
+        500GB 10k rpm SATA
+	Video:
+	    Integrated Mobile Intel
+    Operating System:
+	    Linux Mint 8 64bit
+		
+System 2 is a virtual machine running on a second Inspiron 1525
+    Host Computer runs on similar hardware as above, the host OS is
+	  Windows 7 Ultimate 64bit. The virtual machine is running in VirtualBox
+	  as such I will only list relevant differences.
+	  
+	Memory:
+	    1.5GB
+	HDD:
+	    20GB Virtual HDD
+	    
+System 3 is custom built
+    CPU:
+	    Intel CeleronD 2.2GHz
+	Memory:
+	    4GB DDR2 (plus 8GB Swap partition)
+	HDD:
+	    Primary, 300GB 10k rpm SATA
+		Secondary, 1TB 10k rpm SATA
+	Video:
+	    nVidia 7600 256MB from BioStar
+	Operating System:
+	    Ubuntu Server 12.04 LTS
+		
+
+==============================================================================
+4. Install / Setup
+==============================================================================
+As of when this README was updated the program has only been tested on Debian
+based Linux distro's, so I have written an installation script that should
+take care of downloading and installing the required dependancies.
+
+****WARNING****
+The installation script was written for machines running Python 2.7.x ONLY,
+and only for Debian based platforms, as such use with EXTREME CAUTION as I am
+not liable or responsible for any possible damage that may be caused from its
+use. If you do choose to use it, run it from a terminal if you would like to
+keep an eye on it's progress.
+
+**UPDATE**
+I have received a few emails regarding the same concern so I will address it
+now as well as in the FAQ section.
+
+Q. When I run the installation script I am prompted for my password, <insert
+various concerns about computer/account security>. Why does it need this?
+
+A. It is not my script that is actually prompting you for your password. What
+is happening is the script is assuming you are logged in as a user with the
+priviledges to install and not as root. In order to install these packages it
+is using "sudo" at the beginning of each command. For more information visit:
+  http://www.linux.com/learn/tutorials/306766:linux-101-introduction-to-sudo
+
+
+
+For those readers / users not using a Debian based Linux OS:
+
+1. Download and install all listed dependancies from your accessible
+repositories, EXCEPT pymediainfo.
+
+2. Download pymediainfo. You can do this by going to:
+
+  http://tinyurl.com/d9zdcze
+
+This will immediately start the download from pypi.python.org, if you do not
+trust tinyurl addresses then feel free to download it from:
+
+  pypi.python.org/pypi/pymediainfo
+
+3. Create a directory to place KVConvertor.py into
+
+4. Navigate to the KVConvertor.py's directory and create subdirectory to put
+The pymediainfo files into.
+
+5. Navigate to this location in a terminal and type:
+      python setup.py build
+   
+   Followed by:
+      python setup.py install
+	  
+6. Everything should now be installed and ready to for us to configure the KVC
+Python program.
+
+==============================================================================
+5. Configuration
+==============================================================================
+We tried to make this as easy as possible for everyone, but again if you run
+into any troubles please contact us and we will do our best to resolve it.
+
+For first time use:
+1. Ensure KVConvertor.py is executable:
+      chmod 0777 /pathtofile/KVConvertor.py
+   The reason for 0777 is to ensure the file is not marked as hidden as well
+   as making it read/write/execute capable.
+
+2. Run KVC without arguements
+      python /pathtofile/KVConvertor.py
+	        or
+	  ./pathtofile/KVConvertor.py
+
+3. Read and answer the questions
+
+4. It's ready, run it again with arguements this time
+      python /pathtofile/KVConvertor.py [video1] [video2] ... etc
+	        or
+	  ./pathtofile/KVConvertor.py [video1] [video2] ... etc
+
+Optionally you can create a desktop launcher leading to KVConvertor for drag
+and drop functionality. Be sure to add %F to the end of the launcher's
+command line.
+
+==============================================================================
+6. Other Notes
+==============================================================================
+This README is considered incomplete and may be updated at any time with more
+information.
