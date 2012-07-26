@@ -8,14 +8,23 @@
 #      (Currently copies settings such as Frame Rate, Aspect, etc
 #      from source video, but this will be fixed)
 # 2. Make the script/program more conformative to coding standards
+# 3. Testing recently added Logging and Config read/write
 ##############################################################################
 
 ##############################################################################
 # Imports
 ##############################################################################
-import sys, os, subprocess, linecache, string, shutil, time
+import sys
+import os
+import subprocess
+import linecache
+import string
+import shutil
+import time
+import logging
 from collections import deque
 from pymediainfo import MediaInfo
+from configobj import ConfigObj
 
 ##############################################################################
 # Setting Global Variables.
@@ -33,18 +42,25 @@ addPause = 1
 #=============================================================================
 # User Variables
 #=============================================================================
-# General
-usrSwapAud = 0
-usrDelTemp = 1
+# Do not mess this up! Refer to the wiki for more information
+cfgDir = ('/home/hakugin/VidConversion/KVC/Linux_Primary_x86')
+config = ConfigObj('%s/user.cfg' % cfgDir, indent_type='    ')
 
 #=============================================================================
 # Filename/File Variables.
 #=============================================================================
-wlist = sys.argv[1:]
-Fname = 0
+wList = sys.argv[1:]
+fName = 0
 WD = 0
-Bname = 0
-Extsn = 0
+bName = 0
+eXtsn = 0
+kDual = 0
+sAudio = 0
+burnSub = 0
+delTemp = 0
+
+yes = set(['yes'.'y','ye','yup','yeah','yep'])
+no = set(['no','n','nope','nah'])
 
 #=============================================================================
 # Assigning Values from Input Streams
@@ -62,11 +78,43 @@ s1 = 0
 s2 = 0
 
 #=============================================================================
+# Variables for output/comparison
+#=============================================================================
+v1o = 0
+a1o = 0
+a2o = 0
+
+#=============================================================================
 # Error Counts (Not used yet!)
 #=============================================================================
 vError = 0
 aError = 0
 sError = 0
+
+#=============================================================================
+# Log Handler (work in progress)
+#=============================================================================
+# Set logging to file
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s: %(levelname)s: %(message)s',
+                    datefmt='%m-%d %H:%M',
+                    filename='%s/KVConvertor.log' % cfgDir,
+                    filemode='w')
+
+# messages to console, INFO and higher to sys.stderr
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+# simpler format for console
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+# user the format for displaying on the console
+console.setFormatter(formatter)
+# add handler to root logger
+logging.getLogger('').addHandler(console)
+
+logger1 = logging.getLogger('KVC.Configuration')
+logger2 = logging.getLogger('KVC.Detection')
+logger3 = logging.getLogger('KVC.Conversion')
+
 
 #=============================================================================
 # Setting how messages will be displayed, and other definitions.
@@ -156,6 +204,104 @@ class sInfo:
         self.ID = ID
         self.Format = CDC
         self.Lang = LNG
+
+#=============================================================================
+# Creating the user configuration file
+#=============================================================================
+def create_config():
+    global config
+    config['General'] = {}
+    config['General']['Keep Dual Audio'] = raw_input('Do you want to keep '
+        'both audio tracks if they exist? (1 = Yes, 0 = No):\n')
+    config['General']['Swap Audio'] = raw_input('Would you like to swap '
+        'audio track? (1 = Yes, 0 = No):\n')
+    config['General']['Burn Subtitles'] = raw_input('Shall we add any '
+        'subtitles in permanently? (1 = Yes, 0 = No):\n')
+    config['General']['Delete Temp'] = raw_input('Do you want to remove any '
+        'temporary files created? (1 = Yes, 0 = No):\n')
+
+    config['Video'] = {}
+    config['Video']['Aspect Ratio'] = raw_input('Please select '
+        'your desired Aspect Ratio:\n Options: '
+        '1 = Fullscreen, 2 = Widescreen\n')
+    config['Video']['Width'] = raw_input('What would you like '
+        'the video width to be?:\n')
+    config['Video']['Height'] = raw_input('What should we set '
+        'for the video height?:\n')
+    config['Video']['Bit Rate'] = raw_input('And what will the '
+        'Bit Rate of the output be?: (Optional)\n')
+    config['Video']['Frame Rate'] = raw_input('What shall the '
+        'frame rate be? (Optional):\n')
+
+    config['Audio 1'] = {}
+    config['Audio 1']['Sample Rate'] = raw_input('Please specify '
+        'the output audio sample rate for track 1:\n')
+    config['Audio 1']['Channels'] = raw_input('How many Audio '
+        'channels for the first track?:\n')
+    config['Audio 1']['Bit Rate'] = raw_input('And finally, what '
+        'will be the first audio tracks bit rate?\n')
+
+    config['Audio 2'] = {}
+    config['Audio 2']['Sample Rate'] = raw_input('Please specify '
+        'the output audio sample rate for track 2:\n')
+    config['Audio 2']['Channels'] = raw_input('How many Audio '
+        'channels for the second track?:\n')
+    config['Audio 2']['Bit Rate'] = raw_input('And finally, what '
+        'will be the second audio tracks bit rate?\n')
+
+    config.initial_comment = ('#' * 79, '#',
+        '# This is your basic configuration please do not manually edit'
+        ' this file.',
+        'If you wish to change something simply run this program in'
+        ' terminal without',
+        'any arguments.', '#', '#' * 79, '')
+
+    config.final_comment = ('', '#' * 79, '#',
+        '# Brought to you by Hakugin and Gildor if you have any questions,'
+        'comments,',
+        '# or concerns feel free to let us know on GitHub!',
+        '# <https://github.com/KVC-Video-Convertor/universal-convertor>',
+        '#', '#' * 79)
+
+    config.write()
+
+    read_config()
+
+
+#=============================================================================
+# Read the user config file.
+#=============================================================================
+def read_config():
+    global kDual, sAudio, burnSub, delTemp, v1o, a1o, a2o
+
+    v1o = v_Info(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    a1o = a_Info(0, 0, 0, 0, 0, 0, 0, 0)
+    a2o = a_Info(0, 0, 0, 0, 0, 0, 0, 0)
+
+    kDual = config['General']['Keep Dual Audio']
+    sAudio = config['General']['Swap Audio']
+    burnSub = config['General']['Burn Subtitles']
+    delTemp = config['General']['Delete Temp']
+
+    v1o.DisAsp = config['Video']['Aspect Ratio']
+    v1o.Width = config['Video']['Width']
+    v1o.Height = config['Video']['Height']
+    v1o.BRate = config['Video']['Bit Rate']
+    v1o.FRate = config['Video']['Frame Rate']
+
+    a1o.Sample = config['Audio 1']['Sample Rate']
+    a1o.Channels = config['Audio 1']['Channels']
+    a1o.BRate = config['Audio 1']['Bit Rate']
+
+    a2o.Sample = config['Audio 2']['Sample Rate']
+    a2o.Channels = config['Audio 2']['Channels']
+    a2o.BRate = config['Audio 2']['Bit Rate']
+
+    if len(sys.argv) < 2:
+        print_info()
+    else:
+        get_video_info()
+
 
 ##############################################################################
 # Start the process of getting source video information
@@ -462,8 +608,31 @@ def print_info():
     else:
         pass
 
+    print config.filename
+
     ts_pause()
-    var_reset()
+
+    print 'Keeping Both Audio Tracks?:', kDual
+    print 'Swap the Audio Track?:', sAudio
+    print 'Permanently add subtitles?:', burnSub
+    print 'Remove temporary files when complete?:', delTemp
+
+    print 'Video Aspect Ratio:', v1o.DisAsp
+    print 'Video Width:', v1o.Width
+    print 'Video Height:', v1o.Height
+    print 'Video Bit Rate:', v1o.BRate
+    print 'Video Frame Rate:', v1o.FRate
+
+    print 'Audio 1 Sample Rate:', a1o.Sample
+    print 'Audio 1 Channel count:', a1o.Channels
+    print 'Audio 1 Bit Rate:', a1o.BRate
+
+    print 'Audio 2 Sample Rate:', a2o.Sample
+    print 'Audio 2 Channel count:', a2o.Channels
+    print 'Audio 2 Bit Rate:', a2o.BRate
+
+    ts_pause()
+#    var_reset()
 
 ##############################################################################
 # Reset Variables
@@ -622,12 +791,40 @@ def start_convert():
 # This section actually starts everything
 ##############################################################################
 if len(sys.argv) < 2:
-    usage()
-    raw_input('Please press \'ENTER\' to exit')
+    try:
+        with open('%s/user.cfg' % cfgDir as f:
+            ts_clear()
+            logger1.info('User configuration not found.')
+            while True:
+                ts_clear()
+                print
+                resetPrompt = raw_input('Would you like to run through the '
+                              'configuration again?\n Yes or No\n').lower()
+                if resetPrompt in yes:
+                    create_config()
+                    break
+                elif resetPrompt in no:
+                    ts_clear()
+                    usage()
+                    break
+                else:
+                    subprocess.call('clear')
+                    print
+                    print 'I\'m sorry, I do not understand your response'
+                    print 'Please try again.. '
+    except IOError as e:
+        logger1.warning('File containing user settings does not exist,\n'
+                        'this will be corrected.')    
+        create_config()
+
+
+#    usage()
+#    raw_input('Please press \'ENTER\' to exit')
 else:
     Fname = sys.argv[1]
     for Fname in wlist:
-        get_video_info()
+#        get_video_info()
+        
     ts_clear()
     message('It seems the queue is empty, stopping program.')
     print
