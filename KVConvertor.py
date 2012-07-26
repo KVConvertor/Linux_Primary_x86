@@ -59,7 +59,7 @@ sAudio = 0
 burnSub = 0
 delTemp = 0
 
-yes = set(['yes'.'y','ye','yup','yeah','yep'])
+yes = set(['yes','y','ye','yup','yeah','yep'])
 no = set(['no','n','nope','nah'])
 
 #=============================================================================
@@ -792,7 +792,7 @@ def start_convert():
 ##############################################################################
 if len(sys.argv) < 2:
     try:
-        with open('%s/user.cfg' % cfgDir as f:
+        with open('%s/user.cfg' % cfgDir) as f:
             ts_clear()
             logger1.info('User configuration not found.')
             while True:
