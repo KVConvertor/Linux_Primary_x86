@@ -78,32 +78,10 @@ System 3 is custom built
 4. Install / Setup
 ==============================================================================
 As of when this README was updated the program has only been tested on Debian
-based Linux distro's, so I have written an installation script that should
-take care of downloading and installing the required dependancies.
+based Linux distributions. I will provide instructions and possibly an install
+script for the various Debian based Linux operating systems.
 
-****WARNING****
-The installation script was written for machines running Python 2.7.x ONLY,
-and only for Debian based platforms, as such use with EXTREME CAUTION as I am
-not liable or responsible for any possible damage that may be caused from its
-use. If you do choose to use it, run it from a terminal if you would like to
-keep an eye on it's progress.
-
-**UPDATE**
-I have received a few emails regarding the same concern so I will address it
-now as well as in the FAQ section.
-
-Q. When I run the installation script I am prompted for my password, <insert
-various concerns about computer/account security>. Why does it need this?
-
-A. It is not my script that is actually prompting you for your password. What
-is happening is the script is assuming you are logged in as a user with the
-priviledges to install and not as root. In order to install these packages it
-is using "sudo" at the beginning of each command. For more information visit:
-  http://www.linux.com/learn/tutorials/306766:linux-101-introduction-to-sudo
-
-
-
-For those readers / users not using a Debian based Linux OS:
+Generic Instructions:
 
 1. Download and install all listed dependancies from your accessible
 repositories, EXCEPT pymediainfo.
