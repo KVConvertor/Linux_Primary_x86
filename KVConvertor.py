@@ -59,7 +59,7 @@ sAudio = 0
 burnSub = 0
 delTemp = 0
 
-yes = set(['yes'.'y','ye','yup','yeah','yep'])
+yes = set(['yes','y','ye','yup','yeah','yep'])
 no = set(['no','n','nope','nah'])
 
 #=============================================================================
@@ -274,9 +274,9 @@ def create_config():
 def read_config():
     global kDual, sAudio, burnSub, delTemp, v1o, a1o, a2o
 
-    v1o = v_Info(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-    a1o = a_Info(0, 0, 0, 0, 0, 0, 0, 0)
-    a2o = a_Info(0, 0, 0, 0, 0, 0, 0, 0)
+    v1o = vInfo(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    a1o = aInfo(0, 0, 0, 0, 0, 0, 0, 0)
+    a2o = aInfo(0, 0, 0, 0, 0, 0, 0, 0)
 
     kDual = config['General']['Keep Dual Audio']
     sAudio = config['General']['Swap Audio']
@@ -638,9 +638,9 @@ def print_info():
 # Reset Variables
 ##############################################################################
 def var_reset():
-    global Fname, WD, Bname, Extsn, vContainer, vCount
+    global fName, WD, bName, eXtsn, vContainer, vCount
     global aCount, sCount, tCount, v1, v2, a1, a2, s1, s2
-    Fname = WD = Bname = Extsn = vContainer = vCount = 0
+    fName = WD = bName = eXtsn = vContainer = vCount = 0
     aCount = sCount = tCount = v1 = v2 = a1 = a2 = s1 = s2 = 0
 
 ##############################################################################
@@ -653,7 +653,7 @@ def start_convert():
     message4('%s/Temp' % WD)
     subprocess.call(['mkdir', '-p', '%s/Temp' % WD])
     subprocess.call(['mkdir', '-p', '%s/Completed' % WD])
-    shutil.copy('%s' % Fname, '%s/Temp/%s%s' % (WD, Bname, Extsn))
+    shutil.copy('%s' % fName, '%s/Temp/%s%s' % (WD, bName, eXtsn))
     ts_clear()
     ts_pause()
     message('Finished copying. Starting Subtitle Extraction')
@@ -662,35 +662,35 @@ def start_convert():
         if vContainer == 'Matroska':
             if s2 != 0:
                 subprocess.call(['mkvextract', 'tracks',
-                '%s%s' % (Bname, Extsn),
-                '%s:%s_sub1.tmp' % (s1.ID, Bname),
-                '%s:%s_sub2.tmp' % (s2.ID, Bname)])
+                '%s%s' % (bName, eXtsn),
+                '%s:%s_sub1.tmp' % (s1.ID, bName),
+                '%s:%s_sub2.tmp' % (s2.ID, bName)])
                 if s1.Format == 'UTF-8':
-                    shutil.copy('%s_sub1.tmp' % Bname,
-                    '%s/Completed/%s.srt' % (WD, Bname))
+                    shutil.copy('%s_sub1.tmp' % bName,
+                    '%s/Completed/%s.srt' % (WD, bName))
                 else:
-                    shutil.copy('%s_sub1.tmp' % Bname,
-                    '%s/Completed/%s.%s' % (WD, Bname, s1.Format))
+                    shutil.copy('%s_sub1.tmp' % bName,
+                    '%s/Completed/%s.%s' % (WD, bName, s1.Format))
                 if s2.Format == 'UTF-8':
-                    shutil.copy('%s_sub2.tmp' % Bname,
-                    '%s/Completed/%s.srt' % (WD, Bname))
+                    shutil.copy('%s_sub2.tmp' % bName,
+                    '%s/Completed/%s.srt' % (WD, bName))
                 else:
-                    shutil.copy('%s_sub2.tmp' % Bname,
-                    '%s/Completed/%s.%s' % (WD, Bname, s2.Format))
+                    shutil.copy('%s_sub2.tmp' % bName,
+                    '%s/Completed/%s.%s' % (WD, bName, s2.Format))
             else:
                 subprocess.call(['mkvextract', 'tracks',
-                '%s%s' % (Bname, Extsn),
-                '%s:%s_sub.tmp' % (s1.ID, Bname)])
+                '%s%s' % (bName, eXtsn),
+                '%s:%s_sub.tmp' % (s1.ID, bName)])
                 if s1.Format == 'UTF-8':
-                    shutil.copy('%s_sub1.tmp' % Bname,
-                    '%s/Completed/%s.srt' % (WD, Bname))
+                    shutil.copy('%s_sub1.tmp' % bName,
+                    '%s/Completed/%s.srt' % (WD, bName))
                 else:
-                    shutil.copy('%s_sub1.tmp' % Bname,
-                    '%s/Completed/%s.%s' % (WD, Bname, s1.Format))
+                    shutil.copy('%s_sub1.tmp' % bName,
+                    '%s/Completed/%s.%s' % (WD, bName, s1.Format))
         elif vContainer == 'OGG':
-            subprocess.call(['ogmdemux', '--output', '%s' % Bname,
-            '-na', '-nv', '%s%s' % (Bname, Extsn)])
-            subprocess.call(['cp', '%s-t*.*' % Bname,
+            subprocess.call(['ogmdemux', '--output', '%s' % bName,
+            '-na', '-nv', '%s%s' % (bName, eXtsn)])
+            subprocess.call(['cp', '%s-t*.*' % bName,
             '%s/Completed/' % WD])
         else:
             message2('Sadly we cannot extract subtitles from this video')
@@ -701,7 +701,7 @@ def start_convert():
 
     message('Moving onto Video')
     if int(vCount) == 1:
-        subprocess.call(['ffmpeg', '-i', '%s%s' % (Bname, Extsn), '-an',
+        subprocess.call(['ffmpeg', '-i', '%s%s' % (bName, eXtsn), '-an',
         '-vtag', 'XVID', '-vcodec', 'libxvid', '-b', '%s' % v1.BRate,
         '-s', '%sx%s' % (v1.Width, v1.Height), '-pass', '1', '-passlogfile',
         '%s' % Bname, '-aspect', '%s' % v1.DisAsp, '%s_pass1.avi' % Bname])
@@ -792,7 +792,7 @@ def start_convert():
 ##############################################################################
 if len(sys.argv) < 2:
     try:
-        with open('%s/user.cfg' % cfgDir as f:
+        with open('%s/user.cfg' % cfgDir) as f:
             ts_clear()
             logger1.info('User configuration not found.')
             while True:
@@ -821,9 +821,9 @@ if len(sys.argv) < 2:
 #    usage()
 #    raw_input('Please press \'ENTER\' to exit')
 else:
-    Fname = sys.argv[1]
-    for Fname in wlist:
-#        get_video_info()
+    fName = sys.argv[1]
+    for fName in wList:
+        read_config()
         
     ts_clear()
     message('It seems the queue is empty, stopping program.')
