@@ -307,16 +307,16 @@ def read_config():
 # Start the process of getting source video information
 ##############################################################################
 def get_video_info():
-    global Fname, WD, Bname, Extsn, v1, v2, a1, a2, s1, s2
+    global fName, WD, bName, eXtsn, v1, v2, a1, a2, s1, s2
     global vCount, aCount, sCount, vContainer
-    WD = os.path.dirname('%s' % Fname)
-    Bname = Fname[(len(WD)+1):-4]
-    Extsn = Fname[-4:]
+    WD = os.path.dirname('%s' % fName)
+    bName = fName[(len(WD)+1):-4]
+    eXtsn = fName[-4:]
     os.chdir('%s' % WD)
     ts_clear()
     message('Obtaining video information. Please wait...')
     print
-    mInfo = MediaInfo.parse('%s' % Fname)
+    mInfo = MediaInfo.parse('%s' % fName)
     for track in mInfo.tracks:
         if track.track_type == 'General':
             vCount = track.count_of_video_streams
@@ -531,7 +531,7 @@ def get_video_info():
 ##############################################################################
 def print_info():
     message2('Information from:')
-    message4('%s' % Bname)
+    message4('%s' % bName)
     print 
     print 'Container Type    :', vContainer
     if v1 != 0:
@@ -638,9 +638,9 @@ def print_info():
 # Reset Variables
 ##############################################################################
 def var_reset():
-    global Fname, WD, Bname, Extsn, vContainer, vCount
+    global fName, WD, bName, eXtsn, vContainer, vCount
     global aCount, sCount, tCount, v1, v2, a1, a2, s1, s2
-    Fname = WD = Bname = Extsn = vContainer = vCount = 0
+    fName = WD = bName = eXtsn = vContainer = vCount = 0
     aCount = sCount = tCount = v1 = v2 = a1 = a2 = s1 = s2 = 0
 
 ##############################################################################
@@ -653,7 +653,7 @@ def start_convert():
     message4('%s/Temp' % WD)
     subprocess.call(['mkdir', '-p', '%s/Temp' % WD])
     subprocess.call(['mkdir', '-p', '%s/Completed' % WD])
-    shutil.copy('%s' % Fname, '%s/Temp/%s%s' % (WD, Bname, Extsn))
+    shutil.copy('%s' % fName, '%s/Temp/%s%s' % (WD, bName, eXtsn))
     ts_clear()
     ts_pause()
     message('Finished copying. Starting Subtitle Extraction')
@@ -662,35 +662,35 @@ def start_convert():
         if vContainer == 'Matroska':
             if s2 != 0:
                 subprocess.call(['mkvextract', 'tracks',
-                '%s%s' % (Bname, Extsn),
-                '%s:%s_sub1.tmp' % (s1.ID, Bname),
-                '%s:%s_sub2.tmp' % (s2.ID, Bname)])
+                '%s%s' % (bName, eXtsn),
+                '%s:%s_sub1.tmp' % (s1.ID, bName),
+                '%s:%s_sub2.tmp' % (s2.ID, bName)])
                 if s1.Format == 'UTF-8':
-                    shutil.copy('%s_sub1.tmp' % Bname,
-                    '%s/Completed/%s.srt' % (WD, Bname))
+                    shutil.copy('%s_sub1.tmp' % bName,
+                    '%s/Completed/%s.srt' % (WD, bName))
                 else:
-                    shutil.copy('%s_sub1.tmp' % Bname,
-                    '%s/Completed/%s.%s' % (WD, Bname, s1.Format))
+                    shutil.copy('%s_sub1.tmp' % bName,
+                    '%s/Completed/%s.%s' % (WD, bName, s1.Format))
                 if s2.Format == 'UTF-8':
-                    shutil.copy('%s_sub2.tmp' % Bname,
-                    '%s/Completed/%s.srt' % (WD, Bname))
+                    shutil.copy('%s_sub2.tmp' % bName,
+                    '%s/Completed/%s.srt' % (WD, bName))
                 else:
-                    shutil.copy('%s_sub2.tmp' % Bname,
-                    '%s/Completed/%s.%s' % (WD, Bname, s2.Format))
+                    shutil.copy('%s_sub2.tmp' % bName,
+                    '%s/Completed/%s.%s' % (WD, bName, s2.Format))
             else:
                 subprocess.call(['mkvextract', 'tracks',
-                '%s%s' % (Bname, Extsn),
-                '%s:%s_sub.tmp' % (s1.ID, Bname)])
+                '%s%s' % (bName, eXtsn),
+                '%s:%s_sub.tmp' % (s1.ID, bName)])
                 if s1.Format == 'UTF-8':
-                    shutil.copy('%s_sub1.tmp' % Bname,
-                    '%s/Completed/%s.srt' % (WD, Bname))
+                    shutil.copy('%s_sub1.tmp' % bName,
+                    '%s/Completed/%s.srt' % (WD, bName))
                 else:
-                    shutil.copy('%s_sub1.tmp' % Bname,
-                    '%s/Completed/%s.%s' % (WD, Bname, s1.Format))
+                    shutil.copy('%s_sub1.tmp' % bName,
+                    '%s/Completed/%s.%s' % (WD, bName, s1.Format))
         elif vContainer == 'OGG':
-            subprocess.call(['ogmdemux', '--output', '%s' % Bname,
-            '-na', '-nv', '%s%s' % (Bname, Extsn)])
-            subprocess.call(['cp', '%s-t*.*' % Bname,
+            subprocess.call(['ogmdemux', '--output', '%s' % bName,
+            '-na', '-nv', '%s%s' % (bName, eXtsn)])
+            subprocess.call(['cp', '%s-t*.*' % bName,
             '%s/Completed/' % WD])
         else:
             message2('Sadly we cannot extract subtitles from this video')
@@ -701,10 +701,10 @@ def start_convert():
 
     message('Moving onto Video')
     if int(vCount) == 1:
-        subprocess.call(['ffmpeg', '-i', '%s%s' % (Bname, Extsn), '-an',
+        subprocess.call(['ffmpeg', '-i', '%s%s' % (bName, eXtsn), '-an',
         '-vtag', 'XVID', '-vcodec', 'libxvid', '-b', '%s' % v1.BRate,
         '-s', '%sx%s' % (v1.Width, v1.Height), '-pass', '1', '-passlogfile',
-        '%s' % Bname, '-aspect', '%s' % v1.DisAsp, '%s_pass1.avi' % Bname])
+        '%s' % bName, '-aspect', '%s' % v1.DisAsp, '%s_pass1.avi' % bName])
     else:
         print 'Unsupported number of video tracks'
     ts_pause()
@@ -712,15 +712,15 @@ def start_convert():
 
     message('Proceeding with Audio now')
     if int(aCount) >= 1:
-        subprocess.call(['ffmpeg', '-i', '%s%s' % (Bname, Extsn), '-vn',
+        subprocess.call(['ffmpeg', '-i', '%s%s' % (bName, eXtsn), '-vn',
         '-acodec', 'libmp3lame', '-ab', '%s' % a1.BRate, '-ar',
         '%s' % a1.Sample, '-ac', '%s' % a1.Channels, '-atag', 'MP3',
-        '%s_temp(%s.%s).mp3' % (Bname, a1.ID, a1.Lang)])
+        '%s_temp(%s.%s).mp3' % (bName, a1.ID, a1.Lang)])
         if a2 != 0 and a2 != None:
-            subprocess.call(['ffmpeg', '-i', '%s%s' % (Bname, Extsn), '-vn',
+            subprocess.call(['ffmpeg', '-i', '%s%s' % (bName, eXtsn), '-vn',
             '-acodec', 'libmp3lame', '-ab', '%s' % a2.BRate, '-ar',
             '%s' % a2.Sample, '-ac', '%s' % a2.Channels, '-atag', 'MP3',
-            '%s_temp(%s.%s).mp3' % (Bname, a2.ID, a2.Lang)])
+            '%s_temp(%s.%s).mp3' % (bName, a2.ID, a2.Lang)])
         else:
             pass
     else:
@@ -730,42 +730,42 @@ def start_convert():
 
     message('Extraction done. Beginning the muxing process.')
     if int(aCount) == 1:
-        subprocess.call(['ffmpeg', '-i', '%s_pass1.avi' % Bname, '-vcodec',
-        'copy', '-i', '%s_temp(%s.%s).mp3' % (Bname, a1.ID, a1.Lang),
+        subprocess.call(['ffmpeg', '-i', '%s_pass1.avi' % bName, '-vcodec',
+        'copy', '-i', '%s_temp(%s.%s).mp3' % (bName, a1.ID, a1.Lang),
         '-acodec', 'copy', '-ab', '%s' % a1.BRate, '-ar', '%s' % a1.Sample,
-        '-ac', '%s' % a1.Channels, '%s[completed].avi' % Bname])
+        '-ac', '%s' % a1.Channels, '%s[completed].avi' % bName])
         ts_pause()
         ts_clear()
 
     elif int(aCount) == 2:
         if SwapAudio == 0:
-            subprocess.call(['ffmpeg', '-i', '%s_pass1.avi' % Bname,
+            subprocess.call(['ffmpeg', '-i', '%s_pass1.avi' % bName,
             '-vcodec', 'copy', '-i',
-            '%s_temp(%s.%s).mp3' % (Bname, a2.ID, a2.Lang),
+            '%s_temp(%s.%s).mp3' % (bName, a2.ID, a2.Lang),
             '-acodec', 'libmp3lame', '-alang', '%s' % a2.Lang,
-            '%s_pass2.avi' % Bname])
+            '%s_pass2.avi' % bName])
             ts_pause()
 
-            subprocess.call(['ffmpeg', '-i', '%s_pass2.avi' % Bname,
+            subprocess.call(['ffmpeg', '-i', '%s_pass2.avi' % bName,
             '-vcodec', 'copy', '-i',
-            '%s_temp(%s.%s).mp3' % (Bname, a1.ID, a1.Lang),
-            '-acodec', 'libmp3lame', '%s[completed].avi' % Bname, '-acodec',
+            '%s_temp(%s.%s).mp3' % (bName, a1.ID, a1.Lang),
+            '-acodec', 'libmp3lame', '%s[completed].avi' % bName, '-acodec',
             'libmp3lame', '-newaudio'])
             ts_pause()
             ts_clear()
 
         elif SwapAudio == 1:
-            subprocess.call(['ffmpeg', '-i', '%s_pass1.avi' % Bname,
+            subprocess.call(['ffmpeg', '-i', '%s_pass1.avi' % bName,
             '-vcodec', 'copy', '-i',
-            '%s_temp(%s.%s).mp3' % (Bname, a1.ID, a1.Lang),
+            '%s_temp(%s.%s).mp3' % (bName, a1.ID, a1.Lang),
             '-acodec', 'libmp3lame', '-alang', '%s' % a1.Lang,
-            '%s/Temp/%s_pass2.avi' % Bname])
+            '%s/Temp/%s_pass2.avi' % bName])
             ts_pause()
 
-            subprocess.call(['ffmpeg', '-i', '%s_pass2.avi' % (WD, Bname),
+            subprocess.call(['ffmpeg', '-i', '%s_pass2.avi' % (WD, bName),
             '-vcodec', 'copy', '-i',
-            '%s_temp(%s.%s).mp3' % (Bname, a2.ID, a2.Lang),
-            '-acodec', 'libmp3lame', '%s[completed].avi' % (Bname), '-acodec',
+            '%s_temp(%s.%s).mp3' % (bName, a2.ID, a2.Lang),
+            '-acodec', 'libmp3lame', '%s[completed].avi' % (bName), '-acodec',
             'libmp3lame', '-newaudio'])
             ts_pause()
             ts_clear()
@@ -776,8 +776,8 @@ def start_convert():
 
     message2('Video conversion complete. Moving completed file(s) to:')
     message4('%s/Completed' % WD)
-    shutil.copy('%s/Temp/%s[completed].avi' % (WD, Bname),
-    '%s/Completed/%s.avi' % (WD, Bname))
+    shutil.copy('%s/Temp/%s[completed].avi' % (WD, bName),
+    '%s/Completed/%s.avi' % (WD, bName))
     ts_pause()
     ts_clear()
     del_temp()
@@ -818,8 +818,8 @@ if len(sys.argv) < 2:
         create_config()
 
 else:
-    Fname = sys.argv[1]
-    for Fname in wlist:
+    fName = sys.argv[1]
+    for fName in wList:
         read_config()
         
     ts_clear()
