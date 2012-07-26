@@ -632,7 +632,7 @@ def print_info():
     print 'Audio 2 Bit Rate:', a2o.BRate
 
     ts_pause()
-#    var_reset()
+    var_reset()
 
 ##############################################################################
 # Reset Variables
@@ -817,13 +817,10 @@ if len(sys.argv) < 2:
                         'this will be corrected.')    
         create_config()
 
-
-#    usage()
-#    raw_input('Please press \'ENTER\' to exit')
 else:
     Fname = sys.argv[1]
     for Fname in wlist:
-#        get_video_info()
+        read_config()
         
     ts_clear()
     message('It seems the queue is empty, stopping program.')
