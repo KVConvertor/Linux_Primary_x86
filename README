@@ -104,7 +104,7 @@ The pymediainfo files into.
       python setup.py build
    
    Followed by:
-      python setup.py install
+      sudo python setup.py install
 	  
 6. Everything should now be installed and ready to for us to configure the KVC
 Python program.
