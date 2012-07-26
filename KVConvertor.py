@@ -274,9 +274,9 @@ def create_config():
 def read_config():
     global kDual, sAudio, burnSub, delTemp, v1o, a1o, a2o
 
-    v1o = v_Info(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-    a1o = a_Info(0, 0, 0, 0, 0, 0, 0, 0)
-    a2o = a_Info(0, 0, 0, 0, 0, 0, 0, 0)
+    v1o = vInfo(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    a1o = aInfo(0, 0, 0, 0, 0, 0, 0, 0)
+    a2o = aInfo(0, 0, 0, 0, 0, 0, 0, 0)
 
     kDual = config['General']['Keep Dual Audio']
     sAudio = config['General']['Swap Audio']
