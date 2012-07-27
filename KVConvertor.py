@@ -61,6 +61,8 @@ delTemp = 0
 
 yes = set(['yes','y','ye','yup','yeah','yep'])
 no = set(['no','n','nope','nah'])
+fs = set(['f','fs','full','fscreen','fullscreen','4:3','1.333'])
+ws = set(['w','ws','wide','wscreen','widescreen','16:9','1.777'])
 
 #=============================================================================
 # Assigning Values from Input Streams
@@ -211,14 +213,58 @@ class sInfo:
 def create_config():
     global config
     config['General'] = {}
-    config['General']['Keep Dual Audio'] = raw_input('Do you want to keep '
-        'both audio tracks if they exist? (1 = Yes, 0 = No):\n')
-    config['General']['Swap Audio'] = raw_input('Would you like to swap '
-        'audio track? (1 = Yes, 0 = No):\n')
-    config['General']['Burn Subtitles'] = raw_input('Shall we add any '
-        'subtitles in permanently? (1 = Yes, 0 = No):\n')
-    config['General']['Delete Temp'] = raw_input('Do you want to remove any '
-        'temporary files created? (1 = Yes, 0 = No):\n')
+    while True:
+        config['General']['Keep Dual Audio'] = raw_input('Do you want to keep '
+            'both audio tracks if they exist?\n   [Y]es or [N]o:\n')
+        if config['General']['Keep Dual Audio'] in yes:
+            subprocess.call('clear')
+            break
+        elif config['General']['Keep Dual Audio'] in no:
+            subprocess.call('clear')
+            break
+        else:
+            subprocess.call('clear')
+            logger1.info('Invalid response, please respond with yes or no'
+                '\n Error: KD')
+    while True:
+        config['General']['Swap Audio'] = raw_input('Would you like to swap '
+            'audio track?\n   [Y]es or [N]o:\n')
+        if config['General']['Swap Audio'] in yes:
+            subprocess.call('clear')
+            break
+        elif config['General']['Swap Audio'] in no:
+            subprocess.call('clear')
+            break
+        else:
+            subprocess.call('clear')
+            logger1.info('Invalid response, please respond with yes or no'
+                '\n Error: SA')
+    while True:
+        config['General']['Burn Subtitles'] = raw_input('Shall we add any '
+            'subtitles in permanently?\n   [Y]es or [N]o:\n')
+        if config['General']['Burn Subtitles'] in yes:
+            subprocess.call('clear')
+            break
+        elif config['General']['Burn Subtitles'] in no:
+            subprocess.call('clear')
+            break
+        else:
+            subprocess.call('clear')
+            logger1.info('Invalid response, please respond with yes or no'
+                 '\n Error: BS')
+    while True:
+        config['General']['Delete Temp'] = raw_input('Do you want to remove any '
+            'temporary files created?\n   [Y]es or [N]o:\n')
+        if config['General']['Delete Temp'] in yes:
+            subprocess.call('clear')
+            break
+        elif config['General']['Delete Temp'] in no:
+            subprocess.call('clear')
+            break
+        else:
+            subprocess.call('clear')
+            logger1.info('Invalid response, please respond with yes or no'
+                 '\n Error: DT')
 
     config['Video'] = {}
     config['Video']['Aspect Ratio'] = raw_input('Please select '
