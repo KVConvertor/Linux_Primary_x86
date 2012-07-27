@@ -298,7 +298,7 @@ def create_config():
     config.initial_comment = ('#' * 79, '#',
         '# This is your basic configuration please do not manually edit'
         ' this file.',
-        'If you wish to change something simply run this program in'
+        'If you wish to change something simply run the program in'
         ' terminal without',
         'any arguments.', '#', '#' * 79, '')
 
@@ -306,7 +306,7 @@ def create_config():
         '# Brought to you by Hakugin and Gildor if you have any questions,'
         'comments,',
         '# or concerns feel free to let us know on GitHub!',
-        '# <https://github.com/KVC-Video-Convertor/universal-convertor>',
+        '# <https://github.com/KVConvertor/Linux_Primary_x86>',
         '#', '#' * 79)
 
     config.write()
