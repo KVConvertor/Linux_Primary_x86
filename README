@@ -11,6 +11,13 @@ as simple as drag and drop any video(s) you wish to convert onto the program
 and walk away.
 
 ==============================================================================
+1-A. Known Issues/Bugs, and Important notes
+==============================================================================
+Due to a few dependencies receiving updates we are unable to guarantee proper
+functionality of KVConvertor. We are currently working on resolving issues
+that have arisen from this and will release a new version when available.
+
+==============================================================================
 2. License / Warranty
 ==============================================================================
     KVConvertor - All purpose video converting utility.
