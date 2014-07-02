@@ -1,0 +1,15 @@
+-- 2014/07/02 --
+
+Greetings!
+
+If you have been using this "handy" little script to convert videos you may have noticed some "issues".
+Fear not, these issues are the caused by nor affecting the script. In short, the FFmpeg available within
+the Ubuntu / Debian repositories is not the correct version to use anymore. When I have the free time,
+which has been limited for a while now, I will update the script to check the installed FFmpeg version.
+I am still deciding on what actions to take when an incorrect / unusable version is found, but hey, it
+all comes with the territory of programming!
+
+For now, I recommend more advanced users to build FFmpeg and dependencies from source. For everyone else
+please visit the FFmpeg website and download the latest binaries. The link is http://ffmpeg.org/download.html
+
+That is it for now.
